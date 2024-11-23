@@ -1,0 +1,94 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Todo App</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TodoApp.Web.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/@@fortawesome/fontawesome-free/css/all.min.css" />
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        .app-name {
+            position: fixed;
+            bottom: 2rem;
+            font-size: 5rem;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 0.03);
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            pointer-events: none;
+            user-select: none;
+            width: 100%;
+            text-align: center;
+            z-index: 0;
+        }
+
+        .auth-page {
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.98);
+            border: none;
+            border-radius: 15px;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-page">
+        @RenderBody()
+    </div>
+    
+    <div class="app-name">Todo App</div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

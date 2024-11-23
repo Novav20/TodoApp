@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TodoApp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <!-- Left - Menu Button -->
+        <div class="header-left">
+            <button class="mobile-menu-btn d-md-none">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Center - App Title -->
+        <div class="app-title d-md-none">
+            <i class="fas fa-check-circle"></i>
+            <span>TodoApp</span>
+        </div>
+        
+        <!-- Right - User Menu -->
+        <div class="auth-section">
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <div class="dropdown">
+                    <button class="user-menu-btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-user"></i>
+                        <span class="user-info d-none d-md-inline">@User.Identity?.Name</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>
+                            <span class="dropdown-item-text">
+                                <i class="fas fa-user"></i>
+                                @User.Identity?.Name
+                            </span>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile">
+                                <i class="fas fa-id-card"></i>
+                                Profile
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-cog"></i>
+                                Settings
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form class="form-inline" asp-area="" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            }
+            else
+            {
+                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+            }
+        </div>
+    </header>
+
+    <!-- Mobile Navigation Dropdown -->
+    <div class="mobile-nav-dropdown d-md-none">
+        <nav class="nav flex-column">
+            <a class="nav-link" asp-controller="Todo" asp-action="Index">
+                <i class="fas fa-home"></i>
+                <span class="nav-text">Home</span>
+            </a>
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#createTodoModal">
+                <i class="fas fa-plus"></i>
+                <span class="nav-text">New Task</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Sidebar Navigation (Desktop) -->
+    <nav class="sidebar d-none d-md-block">
+        <!-- App Title in Sidebar -->
+        <div class="sidebar-header">
+            <a class="navbar-brand" asp-area="" asp-controller="Todo" asp-action="Index">
+                <i class="fas fa-check-circle"></i>
+                <span class="brand-text">TodoApp</span>
+            </a>
+            <button class="desktop-toggle-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </div>
+
+        <!-- Navigation Items -->
+        <div class="nav flex-column">
+            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" 
+               asp-controller="Todo" asp-action="Index">
+                <i class="fas fa-home"></i>
+                <span class="nav-text">Home</span>
+            </a>
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#createTodoModal">
+                <i class="fas fa-plus"></i>
+                <span class="nav-text">New Task</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-fluid">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @RenderBody()
+        </div>
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        // Toggle menú móvil
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
+            document.querySelector('.mobile-nav-dropdown').classList.toggle('show');
+        });
+
+        // Toggle sidebar en escritorio
+        document.querySelector('.desktop-toggle-btn').addEventListener('click', function () {
+            document.body.classList.toggle('sidebar-collapsed');
+            const icon = this.querySelector('i');
+            if (document.body.classList.contains('sidebar-collapsed')) {
+                icon.classList.remove('fa-chevron-left');
+                icon.classList.add('fa-chevron-right');
+            } else {
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+            }
+        });
+
+        // Cerrar menú móvil al hacer clic fuera
+        document.addEventListener('click', function (event) {
+            const dropdown = document.querySelector('.mobile-nav-dropdown');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            if (dropdown && menuBtn && !dropdown.contains(event.target) && !menuBtn.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

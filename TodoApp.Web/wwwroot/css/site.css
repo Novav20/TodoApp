@@ -1,0 +1,593 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* Header fijo */
+.app-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    z-index: 1000;
+}
+
+@media (min-width: 768px) {
+    .app-header {
+        left: 250px;
+        background: white;
+        color: #2c3e50;
+        border-bottom: 1px solid #dee2e6;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+}
+
+/* App Title en móvil */
+.app-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    color: white;
+}
+
+.app-title i {
+    font-size: 1.5rem;
+}
+
+/* Botón de menú móvil */
+.mobile-menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+/* Menú de usuario */
+.auth-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.auth-section .nav-link {
+    color: white;
+}
+
+@media (min-width: 768px) {
+    .auth-section .nav-link,
+    .user-menu-btn {
+        color: #2c3e50 !important;
+    }
+}
+
+.user-menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+/* Dropdown móvil */
+.mobile-nav-dropdown {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background: white;
+    border-bottom: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 999;
+    display: none;
+}
+
+.mobile-nav-dropdown.show {
+    display: block;
+}
+
+.mobile-nav-dropdown .nav-link {
+    padding: 1rem;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.mobile-nav-dropdown .nav-link:last-child {
+    border-bottom: none;
+}
+
+.mobile-nav-dropdown .nav-link:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+}
+
+/* Botones de toggle */
+.desktop-toggle-btn {
+    position: absolute;
+    right: -14px;
+    top: 70px;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.desktop-toggle-btn:hover {
+    background-color: #34495e;
+}
+
+/* Estilos para la navegación */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0;
+    z-index: 1100;
+    transition: all 0.3s ease;
+}
+
+.sidebar-header {
+    padding: 1rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-header .navbar-brand {
+    font-size: 1.25rem;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    width: 100%;
+}
+
+.sidebar-header .navbar-brand i {
+    margin-right: 8px;
+}
+
+.sidebar-header .brand-text {
+    display: inline;
+    color: white;
+    white-space: nowrap;
+}
+
+.sidebar .nav {
+    padding-top: 1rem;
+}
+
+.sidebar .nav-link {
+    padding: 0.8rem 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.sidebar .nav-link i {
+    margin-right: 12px;
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.sidebar .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.main-content {
+    margin-left: 250px;
+    margin-top: 60px;
+    padding: 1rem;
+    transition: margin-left 0.3s ease;
+}
+
+/* Modo compacto para escritorio */
+body.sidebar-collapsed .sidebar {
+    width: 60px;
+}
+
+body.sidebar-collapsed .main-content {
+    margin-left: 60px;
+}
+
+body.sidebar-collapsed .app-header {
+    left: 60px;
+}
+
+body.sidebar-collapsed .sidebar .nav-text,
+body.sidebar-collapsed .sidebar .brand-text {
+    display: none;
+}
+
+body.sidebar-collapsed .desktop-toggle-btn i {
+    transform: rotate(180deg);
+}
+
+/* Ajustes para móvil */
+@media (max-width: 767.98px) {
+    .app-header {
+        left: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 1rem;
+    }
+
+    .mobile-menu-btn {
+        display: block;
+        background: none;
+        border: none;
+        color: #2c3e50;
+        font-size: 1.2rem;
+        padding: 0.5rem;
+        cursor: pointer;
+    }
+
+    .mobile-menu-btn:hover {
+        color: #3498db;
+    }
+    
+    .sidebar {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .desktop-toggle-btn {
+        display: none;
+    }
+}
+
+/* Estilos para las tarjetas de tareas */
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Ajustes para el footer */
+.footer {
+    margin-left: 250px;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    position: fixed;
+    bottom: 0;
+    width: calc(100% - 250px);
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .footer {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* Estilos para la sección de autenticación */
+.auth-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.auth-section .nav-link {
+    color: white;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.auth-section .nav-link:hover {
+    color: #ecf0f1;
+}
+
+.auth-section .btn-link {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem;
+}
+
+.auth-section .btn-link:hover {
+    color: #ecf0f1;
+}
+
+.auth-section .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.auth-section .user-info .username {
+    font-weight: 500;
+}
+
+/* Ajustes responsive para la autenticación */
+@media (max-width: 768px) {
+    .auth-section {
+        gap: 0.5rem;
+    }
+
+    .auth-section .nav-link,
+    .auth-section .btn-link,
+    .auth-section .user-info {
+        padding: 0.25rem;
+    }
+
+    .auth-section .user-info .username {
+        display: none;
+    }
+}
+
+/* Estilos para páginas de autenticación */
+body.auth-page {
+    background-color: #2c3e50;
+}
+
+body.auth-page .sidebar {
+    display: none;
+}
+
+body.auth-page .main-content {
+    margin-left: 0;
+    margin-top: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 60px);
+    background-color: #2c3e50;
+    padding-top: 2rem;
+}
+
+body.auth-page .footer {
+    margin-left: 0;
+    background-color: transparent;
+    color: white;
+}
+
+body.auth-page .container {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.auth-container .card {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1) !important;
+    width: 100%;
+}
+
+.auth-container .card-body {
+    padding: 2.5rem;
+}
+
+.auth-container .card-title {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.auth-container .form-label {
+    color: #2c3e50;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.auth-container .form-control {
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e1e8ef;
+    background-color: #f8fafc;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.auth-container .form-control:focus {
+    border-color: #3498db;
+    background-color: #fff;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.1);
+}
+
+.auth-container .btn-primary {
+    background-color: #3498db;
+    border: none;
+    padding: 0.75rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.auth-container .btn-primary:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+}
+
+.auth-container .form-check-label {
+    color: #2c3e50;
+}
+
+.auth-container a {
+    color: #3498db;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.auth-container a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+.auth-container .text-danger {
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Estilos responsivos para autenticación */
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 0 1rem;
+    }
+    
+    .auth-container .card-body {
+        padding: 2rem 1.5rem;
+    }
+}
+
+/* Animación de entrada para el formulario */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-container .card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.modal {
+    z-index: 1200 !important;
+}
+
+.modal-backdrop {
+    z-index: 1150 !important;
+}
+
+/* User Menu Styles */
+.user-menu-btn {
+    color: #2c3e50 !important;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.user-menu-btn:hover,
+.user-menu-btn:focus {
+    color: #3498db !important;
+}
+
+.dropdown-menu {
+    background-color: white;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    padding: 0.5rem 0;
+}
+
+.dropdown-item {
+    color: #2c3e50;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: #f8f9fa;
+    color: #3498db;
+}
+
+.dropdown-item.text-danger:hover,
+.dropdown-item.text-danger:focus {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.dropdown-item-text {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #2c3e50;
+    opacity: 0.8;
+}
+
+.dropdown-divider {
+    border-color: #dee2e6;
+    margin: 0.5rem 0;
+}

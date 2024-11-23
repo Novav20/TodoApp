@@ -1,0 +1,174 @@
+@using System.Web
+@model IEnumerable<TodoApp.Web.Models.TodoItemViewModel>
+
+@{
+    ViewData["Title"] = "Lista de Tareas";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container">
+    <h2 class="my-4">Lista de Tareas</h2>
+    <div class="mb-3">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTodoModal">
+            <i class="fas fa-plus"></i> Nueva Tarea
+        </button>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card @(item.IsCompleted ? "bg-light" : "")">
+                    <div class="card-body">
+                        <h5 class="card-title @(item.IsCompleted ? "text-muted" : "")">@item.Title</h5>
+                        <p class="card-text">@item.Description</p>
+                        <div class="text-muted small mb-2">
+                            <i class="far fa-clock"></i> Created: @item.CreatedAt.ToLocalTime().ToString("g")
+                            @if (item.CompletedAt.HasValue)
+                            {
+                                <br />
+                                <i class="fas fa-check-circle"></i> <span>Completed:
+                                    @item.CompletedAt.Value.ToLocalTime().ToString("g")</span>
+                            }
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <form asp-action="ToggleComplete" method="post" style="display: inline;">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit"
+                                        class="btn btn-sm @(item.IsCompleted ? "btn-secondary" : "btn-success")"
+                                        title="@(item.IsCompleted ? "Mark Incomplete" : "Mark Complete")">
+                                        <i class="fas @(item.IsCompleted ? "fa-times-circle" : "fa-check-circle")"></i>
+                                    </button>
+                                </form>
+                                <button type="button" class="btn btn-sm btn-primary"
+                                    onclick="editTodo('@item.Id', '@HttpUtility.JavaScriptStringEncode(item.Title)', '@HttpUtility.JavaScriptStringEncode(item.Description)')" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-danger" onclick="confirmDelete('@item.Id', '@HttpUtility.JavaScriptStringEncode(item.Title)')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Create Todo Modal -->
+<div class="modal fade" id="createTodoModal" tabindex="-1" aria-labelledby="createTodoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Create" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createTodoModalLabel">Crear Nueva Tarea</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="createTitle" class="form-label">@Html.DisplayNameFor(model => model.Title)</label>
+                        <input type="text" class="form-control" id="createTitle" name="Title" required maxlength="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="createDescription" class="form-label">@Html.DisplayNameFor(model => model.Description)</label>
+                        <textarea class="form-control" id="createDescription" name="Description" required
+                            rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Crear Tarea
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Todo Modal -->
+<div class="modal fade" id="editTodoModal" tabindex="-1" aria-labelledby="editTodoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Edit" method="post">
+                <input type="hidden" id="editTodoId" name="Id">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editTodoModalLabel">Editar Tarea</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editTitle" class="form-label">@Html.DisplayNameFor(model => model.Title)</label>
+                        <input type="text" class="form-control" id="editTitle" name="Title" required maxlength="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">@Html.DisplayNameFor(model => model.Description)</label>
+                        <textarea class="form-control" id="editDescription" name="Description" required
+                            rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function editTodo(id, title, description) {
+            document.getElementById('editTodoId').value = id;
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editDescription').value = description;
+            new bootstrap.Modal(document.getElementById('editTodoModal')).show();
+        }
+
+        function confirmDelete(id, title) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                html: `¿Deseas eliminar la tarea <strong>${title}</strong>?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create and submit form programmatically
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '@Url.Action("Delete", "Todo")';
+                    
+                    // Add antiforgery token
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                    form.appendChild(tokenInput);
+                    
+                    const idInput = document.createElement('input');
+                    idInput.type = 'hidden';
+                    idInput.name = 'id';
+                    idInput.value = id;
+                    form.appendChild(idInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+}

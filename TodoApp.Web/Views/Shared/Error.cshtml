@@ -1,0 +1,27 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h1 class="text-danger mb-4">Error</h1>
+                    <h2 class="mb-3">@ViewBag.ErrorMessage</h2>
+                    
+                    @if (!string.IsNullOrEmpty(ViewBag.ErrorDetails) && Context.Request.Host.Value.Contains("localhost"))
+                    {
+                        <div class="alert alert-danger">
+                            <h4>Error Details:</h4>
+                            <p>@ViewBag.ErrorDetails</p>
+                        </div>
+                    }
+
+                    <a asp-controller="Todo" asp-action="Index" class="btn btn-primary">Return to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
