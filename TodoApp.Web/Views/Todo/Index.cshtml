@@ -7,8 +7,14 @@
 
 @Html.AntiForgeryToken()
 
+<style>
+    .completion-info {
+        min-height: 24px; /* Altura para una línea de texto */
+    }
+</style>
+
 <div class="container">
-    <h2 class="my-4">Lista de Tareas</h2>
+    <h2 class="my-4">Mis Tareas</h2>
     <div class="mb-3">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTodoModal">
             <i class="fas fa-plus"></i> Nueva Tarea
@@ -25,12 +31,13 @@
                         <p class="card-text">@item.Description</p>
                         <div class="text-muted small mb-2">
                             <i class="far fa-clock"></i> Created: @item.CreatedAt.ToLocalTime().ToString("g")
-                            @if (item.CompletedAt.HasValue)
-                            {
-                                <br />
-                                <i class="fas fa-check-circle"></i> <span>Completed:
-                                    @item.CompletedAt.Value.ToLocalTime().ToString("g")</span>
-                            }
+                            <div class="completion-info">
+                                @if (item.CompletedAt.HasValue)
+                                {
+                                    <i class="fas fa-check-circle"></i> <span>Completed:
+                                        @item.CompletedAt.Value.ToLocalTime().ToString("g")</span>
+                                }
+                            </div>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
                             <div>

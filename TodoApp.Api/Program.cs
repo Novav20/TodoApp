@@ -1,53 +1,22 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using TodoApp.Api.Data;
-using TodoApp.Api.Services;
-using TodoApp.Api.Settings;
+using System.Text.Json;
+using TodoApp.Api.Extensions;
+using TodoApp.Core.Extensions;
+using TodoApp.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<TodoDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Configure JWT
-var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>() ?? new JwtSettings();
-builder.Services.AddSingleton(jwtSettings);
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings.Issuer,
-            ValidAudience = jwtSettings.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
-        };
-    });
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
-});
+// Add services from other layers
+builder.Services
+    .AddCoreServices(builder.Configuration)
+    .AddInfrastructureServices(builder.Configuration)
+    .AddApiServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -58,30 +27,39 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Global error handling
+app.UseExceptionHandler(appError =>
+{
+    appError.Run(async context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        var contextFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+        if (contextFeature != null)
+        {
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(contextFeature.Error, "An unhandled exception has occurred.");
 
-app.UseCors("AllowAll");
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new
+            {
+                StatusCode = context.Response.StatusCode,
+                Message = "Internal Server Error."
+            }));
+        }
+    });
+});
+
+// Enable CORS
+app.UseCors("TodoAppPolicy");
+
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-// Initialize Database
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var context = services.GetRequiredService<TodoDbContext>();
-        context.Database.Migrate();
-        DbSeeder.Initialize(context);
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
-    }
-}
+// Ensure database is created and migrations are applied
+await app.Services.MigrateDatabase();
 
 app.Run();

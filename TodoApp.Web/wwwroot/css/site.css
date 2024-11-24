@@ -591,3 +591,65 @@ body.auth-page .container {
     border-color: #dee2e6;
     margin: 0.5rem 0;
 }
+
+/* Estilos para la vista de tareas */
+.task-list {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.task-item {
+    transition: background-color 0.2s;
+}
+
+.task-item:hover {
+    background-color: #f8f9fa;
+}
+
+.task-item .form-check-input:checked + .form-check-label {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+.task-actions {
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.task-item:hover .task-actions {
+    opacity: 1;
+}
+
+/* Estilos para el modal */
+.modal-content {
+    border-radius: 0.5rem;
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 0 0 0.5rem 0.5rem;
+}
+
+/* Estilos para los filtros */
+.btn-group .btn-outline-primary {
+    border-color: #dee2e6;
+}
+
+.btn-group .btn-outline-primary:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+    color: #0d6efd;
+}
+
+.btn-group .btn-outline-primary.active {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+}

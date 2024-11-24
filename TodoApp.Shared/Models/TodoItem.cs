@@ -10,7 +10,7 @@ public class TodoItem
     [Required(ErrorMessage = "El título es requerido")]
     [StringLength(100, ErrorMessage = "El título no puede tener más de 100 caracteres")]
     [DisplayName("Título")]
-    public string? Title { get; set; }
+    public string Title { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "La descripción es requerida")]
     [DisplayName("Descripción")]
@@ -22,9 +22,20 @@ public class TodoItem
     [DisplayName("Fecha de creación")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    [DisplayName("Fecha de actualización")]
+    public DateTime? UpdatedAt { get; set; }
+
     [DisplayName("Fecha de completado")]
     public DateTime? CompletedAt { get; set; }
 
     [DisplayName("Fecha de vencimiento")]
     public DateTime? DueDate { get; set; }
+
+    [DisplayName("Prioridad")]
+    public Priority Priority { get; set; }
+
+    // Relación con el usuario
+    [DisplayName("Id de usuario")]
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
 }

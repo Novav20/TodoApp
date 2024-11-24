@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +8,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    @await RenderSectionAsync("Styles", required: false)
 </head>
+
 <body>
     <!-- App Header -->
     <header class="app-header">
@@ -20,16 +23,19 @@
 
         <!-- Center - App Title -->
         <div class="app-title d-md-none">
-            <i class="fas fa-check-circle"></i>
-            <span>TodoApp</span>
+            <a asp-controller="Home" asp-action="Index">
+                <i class="fas fa-check-circle"></i>
+                <span>TodoApp</span>
+            </a>
         </div>
-        
+
         <!-- Right - User Menu -->
         <div class="auth-section">
             @if (User.Identity?.IsAuthenticated == true)
             {
                 <div class="dropdown">
-                    <button class="user-menu-btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="user-menu-btn dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown"
+                        aria-expanded="false">
                         <i class="fas fa-user"></i>
                         <span class="user-info d-none d-md-inline">@User.Identity?.Name</span>
                     </button>
@@ -40,11 +46,13 @@
                                 @User.Identity?.Name
                             </span>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Profile">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-area="" asp-controller="Profile" asp-action="Index">
                                 <i class="fas fa-id-card"></i>
-                                Profile
+                                Mi Perfil
                             </a>
                         </li>
                         <li>
@@ -53,12 +61,15 @@
                                 Settings
                             </a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <form class="form-inline" asp-area="" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <form class="form-inline" asp-area="" asp-controller="Auth" asp-action="Logout"
+                                asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
                                 <button type="submit" class="dropdown-item text-danger">
                                     <i class="fas fa-sign-out-alt"></i>
-                                    Logout
+                                    Cerrar Sesión
                                 </button>
                             </form>
                         </li>
@@ -67,8 +78,16 @@
             }
             else
             {
-                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-                <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                <div class="d-flex align-items-center">
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span class="d-none d-md-inline ms-1">Iniciar Sesión</span>
+                    </a>
+                    <a asp-controller="Auth" asp-action="Register" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        <span class="d-none d-md-inline ms-1">Registrarse</span>
+                    </a>
+                </div>
             }
         </div>
     </header>
@@ -76,13 +95,13 @@
     <!-- Mobile Navigation Dropdown -->
     <div class="mobile-nav-dropdown d-md-none">
         <nav class="nav flex-column">
-            <a class="nav-link" asp-controller="Todo" asp-action="Index">
+            <a class="nav-link" asp-controller="Home" asp-action="Index">
                 <i class="fas fa-home"></i>
-                <span class="nav-text">Home</span>
+                <span class="nav-text">Inicio</span>
             </a>
-            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#createTodoModal">
-                <i class="fas fa-plus"></i>
-                <span class="nav-text">New Task</span>
+            <a class="nav-link" asp-controller="Todo" asp-action="Index">
+                <i class="fas fa-tasks"></i>
+                <span class="nav-text">Mis Tareas</span>
             </a>
         </nav>
     </div>
@@ -91,7 +110,7 @@
     <nav class="sidebar d-none d-md-block">
         <!-- App Title in Sidebar -->
         <div class="sidebar-header">
-            <a class="navbar-brand" asp-area="" asp-controller="Todo" asp-action="Index">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                 <i class="fas fa-check-circle"></i>
                 <span class="brand-text">TodoApp</span>
             </a>
@@ -102,14 +121,13 @@
 
         <!-- Navigation Items -->
         <div class="nav flex-column">
-            <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")" 
-               asp-controller="Todo" asp-action="Index">
+            <a class="nav-link" asp-controller="Home" asp-action="Index">
                 <i class="fas fa-home"></i>
-                <span class="nav-text">Home</span>
+                <span class="nav-text">Inicio</span>
             </a>
-            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#createTodoModal">
-                <i class="fas fa-plus"></i>
-                <span class="nav-text">New Task</span>
+            <a class="nav-link" asp-controller="Todo" asp-action="Index">
+                <i class="fas fa-tasks"></i>
+                <span class="nav-text">Mis Tareas</span>
             </a>
         </div>
     </nav>
@@ -169,4 +187,5 @@
         });
     </script>
 </body>
+
 </html>

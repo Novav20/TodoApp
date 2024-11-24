@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
-using TodoApp.Web.Services;
-using System.Net.Security;
+using TodoApp.Web.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,39 +13,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Auth/Login";
         options.LogoutPath = "/Auth/Logout";
         options.AccessDeniedPath = "/Auth/AccessDenied";
-        options.Cookie.Name = "TodoApp.Auth";
     });
 
-// Configure HttpClient for API communication
-builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "http://localhost:5203");
-}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-{
-    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
-});
-
-// Configure Todo Service
-builder.Services.AddHttpClient<ITodoService, TodoService>(client =>
-{
-    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "http://localhost:5203");
-}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-{
-    ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true
-});
+// Add Web Services
+builder.Services.AddWebServices(builder.Configuration);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
-}
-else
-{
-    app.UseExceptionHandler("/Error");
-    app.UseStatusCodePagesWithReExecute("/Error/{0}");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
@@ -60,6 +37,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Auth}/{action=Login}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

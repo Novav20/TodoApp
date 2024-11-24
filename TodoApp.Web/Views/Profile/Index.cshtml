@@ -1,0 +1,123 @@
+@model UserProfileViewModel
+
+@{
+    ViewData["Title"] = "Perfil de Usuario";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">@ViewData["Title"]</h2>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Update" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="CreatedAt" />
+                        <input type="hidden" asp-for="TotalTasks" />
+                        <input type="hidden" asp-for="CompletedTasks" />
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Username" class="form-label"></label>
+                                    <input asp-for="Username" class="form-control" />
+                                    <span asp-validation-for="Username" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label"></label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="FirstName" class="form-label"></label>
+                                    <input asp-for="FirstName" class="form-control" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="LastName" class="form-label"></label>
+                                    <input asp-for="LastName" class="form-control" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="card bg-light h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-chart-bar text-primary"></i> Estadísticas
+                                        </h5>
+                                        <div class="mb-2">
+                                            <i class="fas fa-tasks text-secondary"></i>
+                                            <label asp-for="TotalTasks"></label>: @Model.TotalTasks
+                                        </div>
+                                        <div class="mb-2">
+                                            <i class="fas fa-check-circle text-success"></i>
+                                            <label asp-for="CompletedTasks"></label>: @Model.CompletedTasks
+                                        </div>
+                                        <div class="mb-2">
+                                            <i class="fas fa-clock text-warning"></i>
+                                            <label asp-for="PendingTasks"></label>: @Model.PendingTasks
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <i class="fas fa-chart-line text-primary"></i> Progreso
+                                        </h5>
+                                        <div class="progress mb-2" style="height: 20px;">
+                                            <div class="progress-bar bg-success" role="progressbar" 
+                                                 style="width: @Model.CompletionRate%;" 
+                                                 aria-valuenow="@Model.CompletionRate" 
+                                                 aria-valuemin="0" 
+                                                 aria-valuemax="100">
+                                                @Model.CompletionRate.ToString("F1")%
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">
+                                            Has completado el @Model.CompletionRate.ToString("F1")% de tus tareas
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Guardar cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

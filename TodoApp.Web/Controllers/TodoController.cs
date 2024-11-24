@@ -1,132 +1,194 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TodoApp.Web.Models;
+using System.Security.Claims;
 using TodoApp.Web.Services;
+using TodoApp.Shared.Models;
+using TodoApp.Shared.Models.Requests;
+using TodoApp.Web.Models;
 
-namespace TodoApp.Web.Controllers
+namespace TodoApp.Web.Controllers;
+
+[Authorize]
+public class TodoController : Controller
 {
-    [Authorize]
-    public class TodoController : Controller
+    private readonly ITodoWebService _todoService;
+    private readonly ILogger<TodoController> _logger;
+
+    public TodoController(ITodoWebService todoService, ILogger<TodoController> logger)
     {
-        private readonly ITodoService _todoService;
+        _todoService = todoService;
+        _logger = logger;
+    }
 
-        public TodoController(ITodoService todoService)
+    public async Task<IActionResult> Index()
+    {
+        try
         {
-            _todoService = todoService;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var todos = await _todoService.GetAllTodosAsync();
+            return View(todos);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting todos");
+            TempData["ErrorMessage"] = "Error al obtener las tareas. Por favor, inténtalo de nuevo.";
+            return View(Enumerable.Empty<TodoItemViewModel>());
+        }
+    }
+
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View(new TodoItemViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(TodoItemViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
         }
 
-        public async Task<IActionResult> Index()
+        try
         {
-            try
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
             {
-                var todos = await _todoService.GetAllTodosAsync();
-                return View(todos);
+                return RedirectToAction("Login", "Auth");
             }
-            catch (Exception)
-            {
-                TempData["Error"] = "Failed to retrieve todos. Please try again later.";
-                return View(Enumerable.Empty<TodoItemViewModel>());
-            }
-        }
 
-        public IActionResult Create()
+            model.UserId = Guid.Parse(userId);
+            var todo = await _todoService.CreateTodoAsync(model);
+            TempData["SuccessMessage"] = "Tarea creada correctamente.";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
         {
-            return View(new TodoItemViewModel());
+            _logger.LogError(ex, "Error creating todo");
+            ModelState.AddModelError("", "Error al crear la tarea. Por favor, inténtalo de nuevo.");
+            return View(model);
         }
+    }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromForm] TodoItemViewModel todo)
-        {
-            if (!ModelState.IsValid)
-            {
-                TempData["Error"] = "Please fill in all required fields correctly.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            try
-            {
-                await _todoService.CreateTodoAsync(todo);
-                TempData["Success"] = "Todo created successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception)
-            {
-                TempData["Error"] = "Failed to create todo. Please try again.";
-                return RedirectToAction(nameof(Index));
-            }
-        }
-
-        public async Task<IActionResult> Edit(Guid id)
+    [HttpGet]
+    public async Task<IActionResult> Edit(Guid id)
+    {
+        try
         {
             var todo = await _todoService.GetTodoByIdAsync(id);
             if (todo == null)
             {
                 return NotFound();
             }
-            return View(new TodoItemViewModel(todo));
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != todo.UserId.ToString())
+            {
+                return Forbid();
+            }
+
+            return View(todo);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting todo for edit");
+            TempData["ErrorMessage"] = "Error al obtener la tarea. Por favor, inténtalo de nuevo.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(TodoItemViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [FromForm] TodoItemViewModel todo)
+        try
         {
-            if (id != todo.Id)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != model.UserId.ToString())
+            {
+                return Forbid();
+            }
+
+            await _todoService.UpdateTodoAsync(model);
+            TempData["SuccessMessage"] = "Tarea actualizada correctamente.";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating todo");
+            ModelState.AddModelError("", "Error al actualizar la tarea. Por favor, inténtalo de nuevo.");
+            return View(model);
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ToggleComplete(Guid id)
+    {
+        try
+        {
+            var todo = await _todoService.GetTodoByIdAsync(id);
+            if (todo == null)
             {
                 return NotFound();
             }
 
-            if (!ModelState.IsValid)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != todo.UserId.ToString())
             {
-                TempData["Error"] = "Please fill in all required fields correctly.";
-                return RedirectToAction(nameof(Index));
+                return Forbid();
             }
 
-            try
-            {
-                await _todoService.UpdateTodoAsync(todo);
-                TempData["Success"] = "Todo updated successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception)
-            {
-                TempData["Error"] = "Failed to update todo. Please try again.";
-                return RedirectToAction(nameof(Index));
-            }
+            await _todoService.ToggleCompleteAsync(id);
+            return RedirectToAction(nameof(Index));
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(Guid id)
+        catch (Exception ex)
         {
-            try
-            {
-                await _todoService.DeleteTodoAsync(id);
-                TempData["Success"] = "Todo deleted successfully!";
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception)
-            {
-                TempData["Error"] = "Failed to delete todo. Please try again.";
-                return RedirectToAction(nameof(Index));
-            }
+            _logger.LogError(ex, "Error toggling todo completion");
+            TempData["ErrorMessage"] = "Error al actualizar el estado de la tarea. Por favor, inténtalo de nuevo.";
+            return RedirectToAction(nameof(Index));
         }
+    }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ToggleComplete(Guid id)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try
         {
-            try
+            var todo = await _todoService.GetTodoByIdAsync(id);
+            if (todo == null)
             {
-                await _todoService.ToggleCompleteAsync(id);
-                TempData["Success"] = "Todo status updated successfully!";
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            catch (Exception)
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != todo.UserId.ToString())
             {
-                TempData["Error"] = "Failed to update todo status. Please try again.";
-                return RedirectToAction(nameof(Index));
+                return Forbid();
             }
+
+            await _todoService.DeleteTodoAsync(id);
+            TempData["SuccessMessage"] = "Tarea eliminada correctamente.";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting todo");
+            TempData["ErrorMessage"] = "Error al eliminar la tarea. Por favor, inténtalo de nuevo.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

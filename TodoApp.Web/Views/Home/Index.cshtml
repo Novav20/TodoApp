@@ -1,8 +1,72 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Inicio";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-4">¡Bienvenido a TodoApp!</h1>
+            <p class="lead mb-4">
+                Organiza tus tareas de manera eficiente y mantén el control de tus actividades diarias.
+            </p>
+            <div class="features row mt-5">
+                <div class="col-md-4 mb-4">
+                    <div class="feature-item">
+                        <i class="fas fa-tasks fa-3x mb-3 text-primary"></i>
+                        <h3>Gestión de Tareas</h3>
+                        <p>Crea, organiza y completa tus tareas de manera sencilla</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-item">
+                        <i class="fas fa-clock fa-3x mb-3 text-primary"></i>
+                        <h3>Seguimiento</h3>
+                        <p>Mantén un registro de tus tareas completadas y pendientes</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-item">
+                        <i class="fas fa-chart-line fa-3x mb-3 text-primary"></i>
+                        <h3>Productividad</h3>
+                        <p>Mejora tu productividad organizando tus actividades</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-5">
+                <a asp-controller="Todo" asp-action="Index" class="btn btn-primary btn-lg">
+                    <i class="fas fa-arrow-right"></i> Ir a Mis Tareas
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Styles {
+    <style>
+        .feature-item {
+            padding: 2rem;
+            border-radius: 1rem;
+            background-color: #f8f9fa;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-item i {
+            color: #0d6efd;
+        }
+
+        .feature-item h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-item p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+    </style>
+}
